@@ -1,0 +1,262 @@
+﻿
+
+@{
+    ViewBag.Title = "Home Page";
+}
+<h2>
+    Records
+    <button style="float:right;margin:10px 0 10px 0" id="addBtn" type="button" class="btn btn-default">Add Record</button>
+
+</h2>
+
+<div style="margin-top:25px">
+    <table id="jqueryDataTable" class="table table-bordered table-hover table-dark table-responsive-xl">
+        <thead>
+            <tr>
+                <th style="display:none">Id</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Birthdate</th>
+                <th>Date Recieved</th>
+                <th>Phone Number</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Zip</th>
+                <th>Action</th>
+   
+            </tr>
+        </thead>
+        @foreach (var day in ViewBag.Records)
+        {
+        <tr>
+            <td style="display:none">@day.recipient_id</td>
+            <td>@day.first_name</td>
+            <td>@day.last_name</td>
+            <td>@day.birthdate.ToShortDateString()</td>
+            <td>@day.gifted_date.ToShortDateString()</td>
+            <td>@day.phone_number</td>
+            <td>@day.address</td>
+            <td>@day.city</td>
+            <td>@day.state</td>
+            <td>@day.zip</td>
+            <td><button style="float:right;margin:10px 0 10px 0" onclick="deleteRecord(@day.recipient_id)" type="button" class="btn btn-default">Delete</button></td>
+        </tr>
+        }
+    </table>
+</div>
+<div class="modal fade " id="DescModal" role="dialog" > <!--Permissions to user on records page/ Update and Add user check if username exists-->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h3 id="modalTitle" class="modal-title">Edit Record</h3>
+
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="col-lg-3" for="firstName">First Name</label>
+                    <input style="border-radius:5px;margin-bottom:10px;" class="col-lg-9" id="firstName" placeholder="First Name" type="text" maxlength="25"/>
+                </div>
+
+                <div class="row">
+                    <label class="col-lg-3" for="lastName">Last Name</label>
+                    <input style="border-radius:5px;margin-bottom:10px" class="col-lg-9" id="lastName" placeholder="Last Name" type="text" maxlength="25"/>
+                </div>
+
+                <div class="row">
+                    <label class="col-lg-3" for="birthdate">Birth Date</label>
+                    <input style="border-radius:5px;margin-bottom:10px" class="col-lg-9" id="birthdate"  type="text" required/>
+                </div>
+
+                <div class="row">
+                    <label class="col-lg-3" for="giftedDate">Gifted Date</label>
+                    <input style="border-radius:5px;margin-bottom:10px" class="col-lg-9" id="giftedDate" type="text" required/>
+                </div>
+
+                <div class="row">
+                    <label class="col-lg-3" for="phoneNumber">Phone Number</label>
+                    <input style="border-radius:5px;margin-bottom:10px" class="col-lg-9" id="phoneNumber" placeholder="###-###-####" type="text" maxlength="12" />
+                </div>
+
+                <div class="row">
+                    <label class="col-lg-3" for="address">Address</label>
+                    <input style="border-radius:5px;margin-bottom:10px" class="col-lg-9" id="address" placeholder="Address" type="text" maxlength="45" />
+                </div>
+
+                <div class="row">
+                    <label class="col-lg-3" for="city">City</label>
+                    <input style="border-radius:5px;margin-bottom:10px" class="col-lg-9" id="city" placeholder="City" type="text" maxlength="45"/>
+                </div>
+
+                <div class="row">
+                    <label class="col-lg-3" for="state">State</label>
+                    <input style="border-radius:5px;margin-bottom:10px" class="col-lg-9" id="state" placeholder="State" type="text" maxlength="45"/>
+                </div>
+
+                <div class="row">
+                    <label class="col-lg-3" for="zip">Zip</label>
+                    <input style="border-radius:5px;margin-bottom:10px" class="col-lg-9" id="zip" placeholder="ZipCode" type="text" maxlength="15"/>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="saveModal" type="button" class="btn btn-default" onclick="saveRecord()" data-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+@section scripts {
+    <script>
+
+        var selectedData;
+        var name;
+        var table;
+        $(document).ready(function () {
+             table = $('#jqueryDataTable').DataTable();
+
+            $('#jqueryDataTable tbody').on('click', 'tr', function (e) {
+                
+                name = $('td', this).eq().text();
+                selectedData = table.row(this).data();
+                var cellIndex = $('td', this).index(e.target);
+                if (cellIndex != 10) {
+                    $('#modalTitle').text("Edit Record");
+                    $('#DescModal').modal("show");
+                    $("#firstName").val(selectedData[1]);
+                    $("#lastName").val(selectedData[2]);
+                    $("#birthdate").val(selectedData[3]);
+                    $("#giftedDate").val(selectedData[4]);
+                    $("#phoneNumber").val(selectedData[5]);
+                    $("#address").val(selectedData[6]);
+                    $("#city").val(selectedData[7]);
+                    $("#state").val(selectedData[8]);
+                    $("#zip").val(selectedData[9]);
+                }
+                
+            });
+            
+            $("#addBtn").click(function () {
+                $('#DescModal').modal("show");
+                $('#modalTitle').text("Add Record");
+                $("#firstName").val("");
+                $("#lastName").val("");
+                $("#birthdate").val("");
+                $("#giftedDate").val("");
+                $("#phoneNumber").val("");
+                $("#address").val("");
+                $("#city").val("");
+                $("#state").val("");
+                $("#zip").val("");
+                
+            });
+            
+        });
+
+       
+        function createRecord() {
+            var addRecordUrl = "@Url.Action("AddRecord")";
+            var fName = $("#firstName").val();
+            var lName = $("#lastName").val();
+            var bDay = $("#birthdate").val();
+            var giftedDay = $("#giftedDate").val();
+            var phoneNum = $("#phoneNumber").val();
+            var address = $("#address").val();
+            var city = $("#city").val();
+            var state = $("#state").val();
+            var zip = $("#zip").val();
+
+            if (fName == "" && lName == "" && bDay == "" && giftedDay == "") {
+                alert("Some Fields are required, therefore the record cannot be added, try again ensuring First Name, Last Name, Birth Date and Gifted Date are filled in.");
+            } else {
+                $.ajax({
+                    url: addRecordUrl,
+                    data: {
+                        first_name: fName,
+                        last_name: lName,
+                        birthdate: bDay,
+                        gifted_date: giftedDay,
+                        phone_number: phoneNum,
+                        address: address,
+                        city: city,
+                        state: state,
+                        zip: zip
+                    },
+                    method: "POST",
+                    success: function (data) {
+                        location.href = "/Home/";
+                        alert("Record has been added.");
+                    },
+                    error: function () {
+                        alert("An error occured");
+                        return false;
+                    }
+                });
+            }
+            
+        }
+
+        function updateRecord() {
+            var updateRecordUrl = "@Url.Action("UpdateRecord")";
+            var fName = $("#firstName").val();
+            var lName = $("#lastName").val();
+            var bDay = $("#birthdate").val();
+            var giftedDay = $("#giftedDate").val();
+            var phoneNum = $("#phoneNumber").val();
+            var address = $("#address").val();
+            var city = $("#city").val();
+            var state = $("#state").val();
+            var zip = $("#zip").val();
+       
+            $.ajax({
+                url: updateRecordUrl,
+                data: {
+                    recipient_id:selectedData[0],
+                    first_name:fName,
+                    last_name:lName,
+                    birthdate:bDay,
+                    gifted_date:giftedDay,
+                    phone_number: phoneNum,
+                    address: address,
+                    city:city,
+                    state:state,
+                    zip:zip
+                },
+                method: "POST",
+                success: function (data) {
+                    location.href = "/Home/";
+                    alert("Record has been updated.");
+                },
+                error: function () {
+                    alert("An error occured");
+                    return false;
+                }
+            });
+        }
+
+        function saveRecord() {
+
+            if ($('#modalTitle').text() == "Add Record") {
+                createRecord();
+            } else {
+                updateRecord();
+            }
+        }
+
+        function deleteRecord(id) {
+            try {
+                location.href = "/Home/DeleteRecord/" + id;
+                alert("Record Deleted.");
+            } catch (e) {
+                alert("Error.");
+            }
+            
+        }
+    </script>
+}
